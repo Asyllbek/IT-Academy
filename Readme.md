@@ -26,7 +26,11 @@ Read env_example and add your SECRET_KEY and DEBUG status
 Make migrations 
 
 ```
-./manage/py migrate
+./manage.py migrate
+```
+then 
+```
+./manage.py migrate --run-syncdb
 ```
 #### 5-th step
 Create a super user
