@@ -23,7 +23,8 @@
     </thead>
     <tbody>
       {% for quiz in quizzes %}
-        <tr {% if quiz.subject.id in student_subjects %} style="background: #fdf7e3"{%endif%}>
+      {% if quiz.subject.id in student_subjects %}
+        <tr style="background: #fdf7e3">
           <td class="align-middle">{{ quiz.name }}</td>
           <td class="align-middle d-none d-sm-table-cell">{{ quiz.subject.get_html_badge }}</td>
           <td class="align-middle d-none d-sm-table-cell">{{ quiz.questions_count }}</td>
@@ -31,6 +32,7 @@
             <a href="{% url 'students:take_quiz' quiz.pk %}" class="btn btn-primary">Start quiz</a>
           </td>
         </tr>
+            {% endif %}
       {% empty %}
         <tr>
           <td class="bg-light text-center font-italic" colspan="4">No quiz matching your interest subjects right now.</td>
