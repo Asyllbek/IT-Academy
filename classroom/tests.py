@@ -4,8 +4,6 @@ from django.urls import reverse
 
 
 class LoginPageTest(TestCase):
-    fixtures = ["datas.json"]
-
     def setUp(self):
         self.client = Client()
 
