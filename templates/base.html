@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{% block title %}Тестовая платформа IT Academy{% endblock %}</title>
+    <title>{% block title %}IT Academy Test{% endblock %}</title>
     <link rel="icon" href="{% static 'img/favicon.png' %}">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'vendor/fontello-2f186091/css/fontello.css' %}">
@@ -38,10 +38,10 @@
             </div>
             <div class="col-6 text-right">
               {% if user.is_authenticated %}
-                <p class="pt-3"><strong>{{ user.username }}{% if user.is_student %} - {{user.student.score}}{% endif %}</strong> | <a href="{% url 'logout' %}">Выйти</a>.</p>
+                <p class="pt-3"><strong>{{ user.username }}{% if user.is_student %} - {{user.student.score}}{% endif %}</strong> | <a href="{% url 'logout' %}">Log out</a>.</p>
               {% else %}
-                <a href="{% url 'login' %}" class="btn btn-light" role="button">Войти</a>
-                <a href="{% url 'signup' %}" class="btn btn-primary" role="button">Регистрация</a>
+                <a href="{% url 'login' %}" class="btn btn-light" role="button">Log in</a>
+                <a href="{% url 'signup' %}" class="btn btn-primary" role="button">Sign up</a>
               {% endif %}
             </div>
           </div>
@@ -57,7 +57,7 @@
             </div>
           </div>
           <footer>
-            <a href="https://it-academy.kg"> Перейти на главный сайт IT Academy </a>
+            <a href="https://it-academy.kg"> Go to the IT Academy main site </a>
           </footer>
         </div>
       </div>
