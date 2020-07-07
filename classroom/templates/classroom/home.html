@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2> Тестовая платформа IT Academy</h2>
+  <h2>Test platform IT Academy</h2>
   <p class="lead">
-    Уже есть аккаунт ? <a href="{% url 'login' %}">Войти</a>. <br>
-    Можете зарегистироваться как  <a href="{% url 'student_signup' %}"> студент</a>  или  как <a href="{% url 'teacher_signup' %}">преподаватель</a>.
+    Already have an account? <a href="{% url 'login' %}">Login</a>. <br>
+    You can register as a <a href="{% url 'student_signup' %}"> student</a>  or as a <a href="{% url 'teacher_signup' %}">teacher</a>.
   </p>
   <hr>
-  <h3> Что это такое ?</h3>
-  <p>Это платформа для тестирования студентов. Администраторы или преподаватели могут зарегистрироваться и затем создавать тесты, а студенты после регистрации могут проходить их.
+  <h3>What it is ?</h3>
+  <p>This is a student testing platform. Administrators or teachers can register and then create tests, and students after registration can take them.
   </p>
 {% endblock %}
