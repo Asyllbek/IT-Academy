@@ -9,8 +9,6 @@ local_settings.py
 static_root/**
 .vscode/
 .idea
-migrations/
-migrations/**
 my_venv/
 .env
 .env/
