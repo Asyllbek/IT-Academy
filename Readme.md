@@ -23,14 +23,19 @@ pipenv shell
 Read env_example and add your SECRET_KEY and DEBUG status
 
 #### 4-th step
-Make migrations 
-
+Make migrations steps
+1-st
 ```
-./manage.py migrate
+./manage.py makemigrations classroom
+```
+2-nd
+```
+./manage.py migrate classroom
 ```
 then 
 ```
-./manage.py migrate --run-syncdb
+./manage.py migrate 
+
 ```
 #### 5-th step
 Create a super user
