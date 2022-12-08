@@ -1,19 +1,17 @@
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user_model
-
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Avg, Count
 from django.forms import inlineformset_factory
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
-                                  UpdateView)
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
 from ..decorators import teacher_required
-from ..forms import BaseAnswerInlineFormSet, QuestionForm, TeacherSignUpForm
+from ..forms import QuestionForm, TeacherSignUpForm, BaseAnswerInlineFormSet
 from ..models import Answer, Question, Quiz
 
 User = get_user_model()
@@ -26,18 +24,26 @@ class TeacherSignUpView(CreateView):
 
     def get_context_data(self, **kwargs):
         kwargs['user_type'] = 'teacher'
+        kwargs['user'] = self.request.user
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
+        if self.request.user.is_authenticated:
+            return redirect('teachers:quiz_change_list')
+
         user = form.save()
         login(self.request, user)
+        messages.success(self.request, 'You have successfully registered as a teacher.')
         return redirect('teachers:quiz_change_list')
+
+    def get_success_url(self):
+        return reverse('teachers:quiz_change_list')
 
 
 @method_decorator([login_required, teacher_required], name='dispatch')
 class QuizListView(ListView):
     model = Quiz
-    ordering = ('name', )
+    ordering = ('name',)
     context_object_name = 'quizzes'
     template_name = 'classroom/teachers/quiz_change_list.html'
 
@@ -52,7 +58,7 @@ class QuizListView(ListView):
 @method_decorator([login_required, teacher_required], name='dispatch')
 class QuizCreateView(CreateView):
     model = Quiz
-    fields = ('name', 'subject', )
+    fields = ('name', 'subject')
     template_name = 'classroom/teachers/quiz_add_form.html'
 
     def form_valid(self, form):
@@ -66,7 +72,7 @@ class QuizCreateView(CreateView):
 @method_decorator([login_required, teacher_required], name='dispatch')
 class QuizUpdateView(UpdateView):
     model = Quiz
-    fields = ('name', 'subject', )
+    fields = ('name', 'subject',)
     context_object_name = 'quiz'
     template_name = 'classroom/teachers/quiz_change_form.html'
 
@@ -94,9 +100,15 @@ class QuizDeleteView(DeleteView):
     success_url = reverse_lazy('teachers:quiz_change_list')
 
     def delete(self, request, *args, **kwargs):
-        quiz = self.get_object()
-        messages.success(request, 'The quiz %s was deleted with success!' % quiz.name)
-        return super().delete(request, *args, **kwargs)
+        # Get the object Quiz that will be deleted
+        deleted_quiz = self.get_object()
+
+        # Make sure the current user has permission to delete this Quiz object
+        if request.user.has_perm('classroom.delete_quiz', deleted_quiz):
+            messages.success(request, 'The quiz %s was deleted successfully!' % deleted_quiz.name)
+            return super().delete(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
 
     def get_queryset(self):
         return self.request.user.quizzes.all()
@@ -112,7 +124,7 @@ class QuizResultsView(DetailView):
         quiz = self.get_object()
         taken_quizzes = quiz.taken_quizzes.select_related('student__user').order_by('-date')
         total_taken_quizzes = taken_quizzes.count()
-        quiz_score = quiz.taken_quizzes.aggregate(average_score=Avg('score'))
+        quiz_score = taken_quizzes.aggregate(average_score=Avg('score'))
         extra_context = {
             'taken_quizzes': taken_quizzes,
             'total_taken_quizzes': total_taken_quizzes,
@@ -128,10 +140,6 @@ class QuizResultsView(DetailView):
 @login_required
 @teacher_required
 def question_add(request, pk):
-    # By filtering the quiz by the url keyword argument `pk` and
-    # by the owner, which is the logged in user, we are protecting
-    # this view at the object-level. Meaning only the owner of
-    # quiz will be able to add questions to it.
     quiz = get_object_or_404(Quiz, pk=pk, owner=request.user)
 
     if request.method == 'POST':
@@ -151,12 +159,6 @@ def question_add(request, pk):
 @login_required
 @teacher_required
 def question_change(request, quiz_pk, question_pk):
-    # Simlar to the `question_add` view, this view is also managing
-    # the permissions at object-level. By querying both `quiz` and
-    # `question` we are making sure only the owner of the quiz can
-    # change its details and also only questions that belongs to this
-    # specific quiz can be changed via this url (in cases where the
-    # user might have forged/player with the url params.
     quiz = get_object_or_404(Quiz, pk=quiz_pk, owner=request.user)
     question = get_object_or_404(Question, pk=question_pk, quiz=quiz)
 
