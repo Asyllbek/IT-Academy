@@ -35,6 +35,7 @@ class Question(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
     text = models.TextField('Question')
 
+
     def __str__(self):
         return self.text
 
@@ -52,8 +53,6 @@ class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     quizzes = models.ManyToManyField(Quiz, through='TakenQuiz')
     subjects = models.ManyToManyField(Subject, related_name='subjects_students')
-
-    # User reputation score.
     score = models.IntegerField(default=0)
 
     def get_unanswered_questions(self, quiz):
@@ -78,4 +77,3 @@ class TakenQuiz(models.Model):
 class StudentAnswer(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='quiz_answers')
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='+')
-
