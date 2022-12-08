@@ -1,15 +1,15 @@
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user_model
-
 from django.db import transaction
 from django.db.models import Count, Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, ListView, UpdateView
 from django.views import View
+from django.views.decorators.cache import cache_page
+from django.views.generic import CreateView, ListView, UpdateView
 
 from ..decorators import student_required
 from ..forms import StudentSubjectsForm, StudentSignUpForm, TakeQuizForm
@@ -153,7 +153,7 @@ def take_quiz(request, pk):
     })
 
 
-@method_decorator([login_required, student_required], name='dispatch')
+@method_decorator([login_required, student_required, cache_page(60 * 60 * 24 * 7)], name='dispatch')
 class StudentList(ListView):
     paginate_by = 36
     template_name = 'classroom/students/student_list.html'
