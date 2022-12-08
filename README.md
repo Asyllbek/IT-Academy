@@ -92,13 +92,18 @@ _Django project must be running_
 
 _URL: http://127.0.0.1:8000/admin/_
 
-_After authentication, you can go to the following url_
+_Important! User administrator must create Subjects for teachers first !_
+
+_You can logout for admin and go to the following url and register as other user types_
+
 
 _URL: http://127.0.0.1:8000/_
+#### After you can see a page where you will test the web application
 
 
+_*If there are more than 5 answers to be generated, the teacher must click on the question after an exciting successful response creation_
 
-### After you can see a page where you will test the web application
+
 
 
 
